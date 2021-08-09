@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" xmlns:font-size="http://www.w3.org/1999/xhtml">
+
+
+<html>
+<head>
+    <script type="text/javascript" src="textToSpeech.js"></script>
+    <script src="./p5.js"></script>
+    <script src="./p5.speech.js"></script>
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="style.css"/>
+
+
+    <link rel="icon"
+          type="image/svg"
+          href="images/flags/ru.svg">
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Speaking</title>
+
+</head>
+<body>
+
+
+<section id='main_content' hidden="true">
+
+    <div style="width:400px; margin:0 auto;">
+        <button id="next" class="mybutton" style="width: 150px; color: white" onclick="pressFirst()">Next/reveal
+        </button>
+        <button id="stop" class="mybutton" style="width: 150px; color: white" onclick="pressSecond()">Stop</button>
+    </div>
+
+    <div style="width:800px; margin:0 auto; height:50px" id="answer_blank">
+        <p id="answer" style="font-size: 24px"></p>
+    </div>
+
+    <div style="width:1200px; margin:0 auto;">
+
+
+        <div id="question_blank">
+            <table>
+                <tr>
+                    <td style="width:60%">
+                        <p id="question" style="font-size: 24px; text-align:right;"></p>
+                    </td>
+
+                    <td style="width:30%">
+                        <p id="ans" style="font-size: 24px"></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+
+
+    <article>
+
+
+        <table>
+            <td width="30%" id="prono_part" style="color: white">
+
+            </td>
+
+            <td width="30%" id="ety_part" style="color: white">
+
+            </td>
+
+
+        </table>
+
+        <p id="content" style="font-size: 16px"></p>
+
+    </article>
+
+
+</section>
+
+
+<script>
+    let correct_answer;
+    let question;
+    let currentAnswer = ""
+    let answerRevealed = false
+    let isRecording = false
+    let isReading = false
+    main_lang = "en"
+    let currentUrl = ""
+
+    function startRecording() {
+        isRecording = true
+        currentAnswer = ""
+        speech.start(true, false);
+    }
+
+
+    function stopRecording() {
+        isRecording = false
+        //handleText(currentAnswer, function (fff1) {
+        //    ht = fff1
+        document.getElementById("answer").innerHTML = currentAnswer
+        //document.getElementById("next").innerHTML = "Next/reveal"
+        //document.getElementById("stop").innerHTML = "Try again"
+
+        //document.getElementById("question_blank").hidden = true
+        //document.getElementById("answer_blank").hidden = false
+        //})
+    }
+
+    data = []
+
+    function gotSpeech() {
+        currentAnswer += speech.resultString + ". "
+        console.log("result ", speech.resultString)
+    }
+
+
+    function revealAnswer() {
+        document.getElementById("ans").hidden = false;
+        //document.getElementById("next").hidden = false;
+        answerRevealed = true
+    }
+
+    function generateRandomInteger(max) {
+        return Math.floor(Math.random() * max) + 1;
+    }
+
+
+    function do_next() {
+
+
+        document.getElementById("answer").innerHTML = ""
+        document.getElementById("question").innerHTML = ""
+
+        pod = data[generateRandomInteger(data.length - 1)]
+        correct_answer = pod["captions"].join("<br><hr>")
+        question = "<img src=\"" + pod["url"] + "\" height=\"400\" alt=\"Question image\">"
+        document.getElementById("question").innerHTML = question;
+
+        //document.getElementById("next").innerText = "Again"
+        document.getElementById("stop").innerText = "Stop"
+        document.getElementById("answer").innerHTML = ""
+
+
+        answerRevealed = false
+        if (!isReading) {
+            document.getElementById("ans").hidden = true
+            document.getElementById("next").innerText = "Reveal";
+        } else {
+            answerRevealed = true
+            document.getElementById("next").innerText = "Next"
+        }
+        document.getElementById("next").disabled = true;
+
+        document.getElementById("ans").innerHTML = correct_answer
+        startRecording()
+
+        //recordingslist.innerHTML = ""
+    }
+
+    function pressFirst() {
+        if (!isRecording) {
+            if (!answerRevealed) {
+                revealAnswer()
+                document.getElementById("next").innerText = "Next";
+            } else {
+                document.getElementById("question").innerHTML = ""
+                document.getElementById("ans").innerText = ""
+                do_next()
+            }
+        }
+    }
+
+    function pressSecond() {
+        if (isRecording) {
+            speech.stop();
+            document.getElementById("next").style.display = "visible";
+            if (answerRevealed) {
+                document.getElementById("ans").hidden = false
+            }
+            document.getElementById("next").disabled = false;
+            document.getElementById("stop").innerText = "Again"
+        } else {
+            if (!isReading) {
+                document.getElementById("ans").hidden = true
+            }
+            document.getElementById("next").disabled = true;
+            document.getElementById("stop").innerText = "Stop"
+            document.getElementById("answer").innerHTML = ""
+            startRecording()
+        }
+    }
+
+    function start_the_whole_thing() {
+        document.getElementById("main_content").hidden = false
+        do_next()
+    }
+
+    function readTextFile(clb) {
+        allText = ""
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", "speaking_data//speaking_images_" + main_lang + ".txt", true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4) {
+                var allText = rawFile.responseText;
+                clb(allText)
+            }
+        }
+        rawFile.send();
+        return allText
+    }
+
+    function initData(after) {
+        data = []
+        readTextFile(function (dt) {
+            parts = dt.split("\n")
+            for (let i = 0; i < parts.length; i++) {
+                mems = parts[i].split('|')
+                obj = {}
+                obj["url"] = mems[0]
+                obj["captions"] = []
+                for (let j = 1; j < mems.length - 3; j++) {
+                    obj.captions.push(mems[j])
+                }
+                data.push(obj)
+            }
+
+            after()
+        })
+    }
+
+
+    initData(function () {
+        inittts()
+        speech = new p5.SpeechRec(main_lang, gotSpeech)
+        speech.onEnd = stopRecording
+        start_the_whole_thing()
+        isReading = false
+        cont = document.getElementById("content")
+        ety = document.getElementById("ety_part")
+        prono = document.getElementById("prono_part")
+    })
+
+</script>
+
+
+<!-- Include the recorder.js library from a local copy -->
+<script src="recorder.js"></script>
+</body>
+</html>
