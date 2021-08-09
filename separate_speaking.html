@@ -7,8 +7,9 @@
 <html>
 <head>
     <script type="text/javascript" src="textToSpeech.js"></script>
-    <script src="./p5.js"></script>
-    <script src="./p5.speech.js"></script>
+    <script src="p5.js"></script>
+    <script src="p5.speech.js"></script>
+    <script src="p5.sound.js"></script>
 
     <link rel="stylesheet"
           type="text/css"
@@ -17,7 +18,7 @@
 
     <link rel="icon"
           type="image/svg"
-          href="images/flags/ru.svg">
+          href="speak_pa.svg">
 
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -97,10 +98,33 @@
         isRecording = true
         currentAnswer = ""
         speech.start(true, false);
+
+        /*
+        recorder.record(soundFile);
+        console.log('Recording now! ');
+        state++;
+
+         */
     }
 
+    /*
+    function setup() {
+        // create an audio in
+        mic = new p5.AudioIn();
+        mic.start();
+        recorder = new p5.SoundRecorder();
+        recorder.setInput(mic);
+        soundFile = new p5.SoundFile();
+    }
+     */
 
     function stopRecording() {
+        //recorder.stop(); // stop recorder, and send the result to soundFile
+        //console.log('Recording stopped');
+        //console.log(soundFile)
+        //soundFile.play(); // play the result!
+        //saveSound(soundFile, 'mySound.wav'); // save file
+
         isRecording = false
         //handleText(currentAnswer, function (fff1) {
         //    ht = fff1
@@ -116,7 +140,7 @@
     data = []
 
     function gotSpeech() {
-        currentAnswer += speech.resultString + ". "
+        currentAnswer += speech.resultString + " = ("+Math.round(speech.resultConfidence*100)+") <br> "
         console.log("result ", speech.resultString)
     }
 
@@ -131,6 +155,8 @@
         return Math.floor(Math.random() * max) + 1;
     }
 
+    let mic, recorder, soundFile;
+    state = 0
 
     function do_next() {
 
@@ -160,6 +186,8 @@
 
         document.getElementById("ans").innerHTML = correct_answer
         startRecording()
+
+
 
         //recordingslist.innerHTML = ""
     }
@@ -198,6 +226,7 @@
     }
 
     function start_the_whole_thing() {
+
         document.getElementById("main_content").hidden = false
         do_next()
     }
@@ -238,7 +267,7 @@
 
     initData(function () {
         inittts()
-        speech = new p5.SpeechRec(main_lang, gotSpeech)
+        speech = new p5.SpeechRec("en-US", gotSpeech)
         speech.onEnd = stopRecording
         start_the_whole_thing()
         isReading = false

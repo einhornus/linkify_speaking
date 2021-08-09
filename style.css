@@ -1,0 +1,352 @@
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Montserrat";
+}
+
+body {
+    background-color: var(--primary-color);
+}
+
+h1{
+    font-family: "Montserrat";
+    font-size: 22px;
+}
+
+p, textarea, input {
+    font-size: 15px;
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
+}
+
+textarea {
+    outline: none;
+    resize: none;
+}
+
+table.reverso_table td {
+    width: 50%;
+    overflow: hidden;
+    vertical-align: top;
+    border: 1px dotted var(--secondary-color);
+}
+
+
+:root {
+    --primary-color: #4444BB;
+    --secondary-color: white;
+}
+
+.imagebutton {
+    background-color: #000066;
+    color: white;
+    border: none;
+}
+
+
+a.verb:link {color: #FFA500; text-decoration: none;}
+a.verb:visited {color: #FFA500; text-decoration: none;}
+a.verb:hover {color: #FFA500; text-decoration:underline}
+
+a.normal:link {color: cyan; text-decoration: none;}
+a.normal:visited {color: cyan; text-decoration: none;}
+a.normal:hover {color: cyan; text-decoration:underline}
+
+a.noun:link {color: cyan; text-decoration: none;}
+a.noun:visited {color: cyan; text-decoration: none;}
+a.noun:hover {color: cyan; text-decoration:underline}
+
+a.adjective:link {color: #009933; text-decoration: none;}
+a.adjective:visited {color: #009933; text-decoration: none;}
+a.adjective:hover {color: #009933; text-decoration:underline}
+
+a.adverb:link {color: #00FF33; text-decoration: none;}
+a.adverb:visited {color: #00FF33; text-decoration: none;}
+a.adverb:hover {color: #00FF33; text-decoration:underline}
+
+a.pronoun:link {color: #FF99EE; text-decoration: none;}
+a.pronoun:visited {color: #FF99EE; text-decoration: none;}
+a.pronoun:hover {color: #FF99EE; text-decoration:underline}
+
+a.numeral:link {color: #FFFF33; text-decoration: none;}
+a.numeral:visited {color: #FFFF33; text-decoration: none;}
+a.numeral:hover {color: #FFFF33; text-decoration:underline}
+
+a.particle:link {color: #FFaaaa; text-decoration: none;}
+a.particle:visited {color: #FFaaaa; text-decoration: none;}
+a.particle:hover {color: #FFaaaa; text-decoration:underline}
+
+a.adp:link {color: #FFEEEE; text-decoration: none;}
+a.adp:visited {color: #FFEEEE; text-decoration: none;}
+a.adp:hover {color: #FFEEEE; text-decoration:underline}
+
+a:link {color: cyan; text-decoration: none;}
+a:visited {color: cyan; text-decoration: none;}
+a:hover {color: cyan; text-decoration:underline}
+
+
+
+table {
+    width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+table.center td {
+    width: 50%;
+    overflow: hidden;
+    vertical-align: top;
+    border: 1px dotted var(--secondary-color);
+}
+
+table.center2 td {
+    word-wrap: break-word;
+    overflow: hidden;
+    vertical-align: top;
+    border: 0.5px dotted var(--secondary-color);
+}
+
+.imgHolder {
+    position: relative;
+}
+.imgHolder span {
+    position: absolute;
+    font-size: 14px;
+    right: 10px;
+    bottom: 5px;
+}
+
+table.searchtable td {
+    overflow: hidden;
+    horiz-align: center;
+    border: 1px dotted var(--secondary-color);;
+}
+
+table.inflection-table td {
+    overflow: hidden;
+    horiz-align: left;
+    border: 1px dotted var(--secondary-color);;
+}
+
+table.searchtable {
+    horiz-align: center;
+}
+
+table.upper td {
+    width: 50%;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+table.pane td {
+    width: 25%;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+.mybutton {
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    border-radius: 10px;
+    padding: 0px 0px;
+    background-color: #555588;
+}
+
+.mydropbox {
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 10px 0px;
+    background-color: #555588;
+}
+
+
+.smallbutton {
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: #555588;
+}
+
+
+section:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+nav {
+    float: left;
+    width: 30%;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+article {
+    float: right;
+    padding: 10px;
+    width: 70%;
+}
+
+body    {overflow-y:scroll;}
+
+
+
+.slidecontainer {
+    width: 70%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 15px; /* Specified height */
+    background:  cyan; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 15px; /* Set a specific slider handle width */
+    height: 20px; /* Slider handle height */
+    background: darkcyan; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+p.ex1 {
+    text-size-adjust: none;
+    max-height: 1250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    vertical-align: top;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: darkcyan; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+summary::-webkit-details-marker {
+    display: none
+}
+
+summary::after {
+    background: grey;
+    border-radius: 5px;
+    content: "+";
+    color: #fff;
+    float: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: -0px 0px 0 0;
+    padding: 0;
+    text-align: center;
+    width: 20px;
+}
+
+details[open] summary::after {
+    content: "-";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.form-switch {
+    display: inline-block;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.form-switch i {
+    position: relative;
+    display: inline-block;
+    margin-right: .5rem;
+    width: 46px;
+    height: 26px;
+    background-color: #e6e6e6;
+    border-radius: 23px;
+    vertical-align: text-bottom;
+    transition: all 0.3s linear;
+}
+
+.form-switch i::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 42px;
+    height: 22px;
+    background-color: #fff;
+    border-radius: 11px;
+    transform: translate3d(2px, 2px, 0) scale3d(1, 1, 1);
+    transition: all 0.25s linear;
+}
+
+.form-switch i::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    background-color: #fff;
+    border-radius: 11px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+    transform: translate3d(2px, 2px, 0);
+    transition: all 0.2s ease-in-out;
+}
+
+.form-switch:active i::after {
+    width: 28px;
+    transform: translate3d(2px, 2px, 0);
+}
+
+.form-switch:active input:checked + i::after { transform: translate3d(16px, 2px, 0); }
+
+.form-switch input { display: none; }
+
+.form-switch input:checked + i { background-color: #4BD763; }
+
+.form-switch input:checked + i::before { transform: translate3d(18px, 2px, 0) scale3d(0, 0, 0); }
+
+.form-switch input:checked + i::after { transform: translate3d(22px, 2px, 0); }
