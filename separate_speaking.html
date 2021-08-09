@@ -60,7 +60,6 @@
     </div>
 
 
-
     <article>
 
 
@@ -91,14 +90,16 @@
     let answerRevealed = false
     let isRecording = false
     let isReading = false
-    main_lang = "en"
+    let main_lang = "nl"
     let currentUrl = ""
+    let confidences = []
+    let oldTime = 0
 
     function startRecording() {
         isRecording = true
         currentAnswer = ""
         speech.start(true, false);
-
+        oldTime = Date.now()
         /*
         recorder.record(soundFile);
         console.log('Recording now! ');
@@ -118,17 +119,85 @@
     }
      */
 
+    function getSelectionText() {
+        var text = "";
+        var activeEl = document.activeElement;
+        var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+        if (
+            (activeElTagName == "textarea") || (activeElTagName == "input" &&
+                /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+            (typeof activeEl.selectionStart == "number")
+        ) {
+            text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+        } else if (window.getSelection) {
+            text = window.getSelection().toString();
+        }
+        return text;
+    }
+
+    document.onkeydown = checkKey;
+
+    function checkKey(e) {
+        e = e || window.event;
+        if (e.keyCode == '83') {
+            if (!(document.activeElement == document.getElementById("text"))) {
+                speak(getSelectionText(), main_lang)
+            }
+
+
+        }
+    }
+
     function stopRecording() {
         //recorder.stop(); // stop recorder, and send the result to soundFile
         //console.log('Recording stopped');
         //console.log(soundFile)
         //soundFile.play(); // play the result!
         //saveSound(soundFile, 'mySound.wav'); // save file
+        timePassed = Date.now() - oldTime
+        sum_confs = 0
+        sum_lens = 0
+        for (let i = 0; i < confidences.length; i++) {
+            sum_confs += confidences[i][1] * confidences[i][0]
+            sum_lens += confidences[i][0]
+        }
+
+        vowels = ['a', 'i', 'u', 'o', 'e', 'y']
+        syllables = 0
+        for (let i = 0; i < currentAnswer.length; i++) {
+            isV = false
+            for (let j = 0; j < vowels.length; j++) {
+                if (vowels[j] === currentAnswer[i]) {
+                    isV = true
+                    break
+                }
+            }
+            if (isV) {
+                syllables++
+            }
+        }
+
+        console.log(currentAnswer, syllables)
+
+        normalTime = syllables * 333.0
+        timeK = Math.round(normalTime / timePassed * 100)
+
+        if (normalTime === 0) {
+            timeK = 0
+        }
+
+        console.log("SL", confidences)
+        average_conf = sum_confs / sum_lens
+
+        if (sum_lens == 0) {
+            average_conf = 0
+        }
+        confidences = []
 
         isRecording = false
         //handleText(currentAnswer, function (fff1) {
         //    ht = fff1
-        document.getElementById("answer").innerHTML = currentAnswer
+        document.getElementById("answer").innerHTML = currentAnswer + "<br>" + "Confidence: " + Math.round(average_conf * 100) + "%; Speed: " + timeK + "%"
         //document.getElementById("next").innerHTML = "Next/reveal"
         //document.getElementById("stop").innerHTML = "Try again"
 
@@ -140,7 +209,9 @@
     data = []
 
     function gotSpeech() {
-        currentAnswer += speech.resultString + " = ("+Math.round(speech.resultConfidence*100)+") <br> "
+        //currentAnswer += speech.resultString + " = ("+Math.round(speech.resultConfidence*100)+") <br> "
+        currentAnswer += speech.resultString + ". "
+        confidences.push([speech.resultString.length, speech.resultConfidence])
         console.log("result ", speech.resultString)
     }
 
@@ -166,7 +237,8 @@
 
         pod = data[generateRandomInteger(data.length - 1)]
         correct_answer = pod["captions"].join("<br><hr>")
-        question = "<img src=\"" + pod["url"] + "\" height=\"400\" alt=\"Question image\">"
+        console.log("img//" + pod["url"])
+        question = "<img src=\"" + "img//" + pod["url"] + "\" height=\"400\" alt=\"Question image\">"
         document.getElementById("question").innerHTML = question;
 
         //document.getElementById("next").innerText = "Again"
@@ -186,7 +258,6 @@
 
         document.getElementById("ans").innerHTML = correct_answer
         startRecording()
-
 
 
         //recordingslist.innerHTML = ""
@@ -266,8 +337,8 @@
 
 
     initData(function () {
-        inittts()
-        speech = new p5.SpeechRec("en-US", gotSpeech)
+        inittts(main_lang)
+        speech = new p5.SpeechRec(main_lang, gotSpeech)
         speech.onEnd = stopRecording
         start_the_whole_thing()
         isReading = false

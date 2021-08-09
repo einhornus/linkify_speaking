@@ -2,11 +2,11 @@
 //let speech;
 
 
-function inittts()
+function inittts(lang)
 {
     //utterance = new SpeechSynthesisUtterance();
     //window.speechSynthesis.speak(utterance);
-    speak("荒野", false)
+    speak("荒野", lang, false)
 }
 
 
@@ -76,8 +76,7 @@ function resumeInfinity() {
 }
 
 
-function speak(stuff, notification=true){
-
+function speak(stuff, lang, notification=true){
     if(notification && stuff == ""){
         alert("Select some text on the page to sound it out")
         return
@@ -158,21 +157,21 @@ function speak(stuff, notification=true){
 
     goodVoices = []
     for(let i = 0; i<voiceArr.length; i++){
-        console.log("voice", voiceArr[i].lang.substring(0, 2), std_langs[main_lang])
-        if(voiceArr[i].lang.substring(0, 2) == std_langs[main_lang]){
+        console.log("voice", voiceArr[i].lang.substring(0, 2), lang)
+        if(voiceArr[i].lang.substring(0, 2) == lang){
             goodVoices.push(voiceArr[i])
         }
     }
 
     if (goodVoices.length == 0){
         if(notification) {
-            alert("No " + std_langs_full[main_lang] + " voices found. Try a different browser")
+            alert("No " + main_lang + " voices found. Try a different browser")
         }
         return
     }
 
     utterance.voice = goodVoices[0]
-    utterance.lang = std_langs_full[main_lang]
+    utterance.lang = main_lang
 
     /*
     utterance.speech = clearedStuff
