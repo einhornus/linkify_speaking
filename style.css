@@ -12,6 +12,11 @@ h1{
     font-size: 22px;
 }
 
+.center {
+    display: flex;
+    justify-content: center;
+}
+
 p, textarea, input {
     font-size: 15px;
     color: var(--secondary-color);

@@ -11,6 +11,17 @@
     <script src="p5.speech.js"></script>
     <script src="p5.sound.js"></script>
 
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <script src="autocomplete_handler.js"></script>
+
+
+
     <link rel="stylesheet"
           type="text/css"
           href="style.css"/>
@@ -30,17 +41,50 @@
 
 <section id='main_content' hidden="true">
 
-    <div style="width:400px; margin:0 auto;">
-        <button id="next" class="mybutton" style="width: 150px; color: white" onclick="pressFirst()">Next/reveal
-        </button>
-        <button id="stop" class="mybutton" style="width: 150px; color: white" onclick="pressSecond()">Stop</button>
+    <div class="center">
+        <table>
+            <tr>
+
+                <td>
+                    <div class='center'>
+                        <input id="searchfield" value="" type="text" placeholder="Pronunciation helper"
+                               style="height: 30px; width: 200px; border-radius: 5px; background-color: lightgray; color: black">
+                        &nbsp;
+                        <a href="#" onclick="do_search()">
+                            <img src="audio.png" title="Search for meaning"
+                                 style="width:30px;height:30px">
+                        </a>
+                    </div>
+
+                </td>
+                <td>
+
+                    <a href="#" onclick="linkifySelected()">
+                        <img src="logo2.png" title="Linkify selection (hotkey: L)"
+                             style="width:20px;height:20px; padding-top: 0px">
+                    </a>
+
+                    <button id="next" class="mybutton" style="width: 150px; color: white" onclick="pressFirst()">
+                        Next/reveal
+                    </button>
+                    <button id="stop" class="mybutton" style="width: 150px; color: white" onclick="pressSecond()">Stop
+                    </button>
+                    <a href="#" onclick="speakSelected()">
+                        <img src="audio.png" title="Speak selection (hotkey: S)"
+                             style="width:20px;height:20px; padding-top: 0px">
+                    </a></td>
+
+
+            </tr>
+        </table>
+
     </div>
 
-    <div style="width:800px; margin:0 auto; height:50px" id="answer_blank">
+    <div class="center" style="height: 50px" id="answer_blank">
         <p id="answer" style="font-size: 24px"></p>
     </div>
 
-    <div style="width:1200px; margin:0 auto;">
+    <div style="width:100%; margin: auto;">
 
 
         <div id="question_blank">
@@ -50,7 +94,7 @@
                         <p id="question" style="font-size: 24px; text-align:right;"></p>
                     </td>
 
-                    <td style="width:30%">
+                    <td style="width:30%; vertical-align:top">
                         <p id="ans" style="font-size: 24px"></p>
                     </td>
                 </tr>
@@ -90,10 +134,19 @@
     let answerRevealed = false
     let isRecording = false
     let isReading = false
-    let main_lang = "nl"
+    let main_lang = "en"
     let currentUrl = ""
     let confidences = []
     let oldTime = 0
+    let max_displayed = 10
+
+    function do_search() {
+        v = document.getElementById("searchfield").value
+        if (v.length > 0) {
+            speak(v, main_lang)
+        }
+        //document.getElementById("searchfield").value = ""
+    }
 
     function startRecording() {
         isRecording = true
@@ -137,14 +190,38 @@
 
     document.onkeydown = checkKey;
 
+    function toLinkify(text) {
+        window.open("http://link-ify.com?lang=" + main_lang + "&text=" + text, '_blank').focus();
+    }
+
+    function linkifySelected() {
+        st = getSelectionText()
+        if (st.length > 0) {
+            toLinkify(st)
+        } else {
+            alert("Please first select the text you want to linkify")
+        }
+    }
+
+    function speakSelected() {
+        st = getSelectionText()
+        if (st.length > 0) {
+            speak(st, main_lang)
+        } else {
+            alert("Please first select the text you want to hear")
+        }
+    }
+
     function checkKey(e) {
-        e = e || window.event;
-        if (e.keyCode == '83') {
-            if (!(document.activeElement == document.getElementById("text"))) {
+        if(!(document.activeElement == document.getElementById("searchfield"))){
+            e = e || window.event;
+            if (e.keyCode == '83') {
                 speak(getSelectionText(), main_lang)
             }
 
-
+            if (e.keyCode == '76') {
+                toLinkify(getSelectionText(), main_lang)
+            }
         }
     }
 
@@ -177,7 +254,6 @@
             }
         }
 
-        console.log(currentAnswer, syllables)
 
         normalTime = syllables * 333.0
         timeK = Math.round(normalTime / timePassed * 100)
@@ -186,7 +262,6 @@
             timeK = 0
         }
 
-        console.log("SL", confidences)
         average_conf = sum_confs / sum_lens
 
         if (sum_lens == 0) {
@@ -195,15 +270,15 @@
         confidences = []
 
         isRecording = false
-        //handleText(currentAnswer, function (fff1) {
-        //    ht = fff1
         document.getElementById("answer").innerHTML = currentAnswer + "<br>" + "Confidence: " + Math.round(average_conf * 100) + "%; Speed: " + timeK + "%"
-        //document.getElementById("next").innerHTML = "Next/reveal"
-        //document.getElementById("stop").innerHTML = "Try again"
 
-        //document.getElementById("question_blank").hidden = true
-        //document.getElementById("answer_blank").hidden = false
-        //})
+
+        document.getElementById("next").style.display = "visible";
+        if (answerRevealed) {
+            document.getElementById("ans").hidden = false
+        }
+        document.getElementById("next").disabled = false;
+        document.getElementById("stop").innerText = "Again"
     }
 
     data = []
@@ -212,7 +287,6 @@
         //currentAnswer += speech.resultString + " = ("+Math.round(speech.resultConfidence*100)+") <br> "
         currentAnswer += speech.resultString + ". "
         confidences.push([speech.resultString.length, speech.resultConfidence])
-        console.log("result ", speech.resultString)
     }
 
 
@@ -222,23 +296,47 @@
         answerRevealed = true
     }
 
+
     function generateRandomInteger(max) {
         return Math.floor(Math.random() * max) + 1;
     }
 
-    let mic, recorder, soundFile;
-    state = 0
 
     function do_next() {
-
-
         document.getElementById("answer").innerHTML = ""
         document.getElementById("question").innerHTML = ""
 
-        pod = data[generateRandomInteger(data.length - 1)]
-        correct_answer = pod["captions"].join("<br><hr>")
-        console.log("img//" + pod["url"])
-        question = "<img src=\"" + "img//" + pod["url"] + "\" height=\"400\" alt=\"Question image\">"
+        integer = generateRandomInteger(data.length - 1)
+        pod = data[integer]
+
+        console.log(integer, data.length)
+
+        pod["captions"].sort(function compareFn(firstEl, secondEl) {
+            return firstEl.length - secondEl.length
+        })
+        cn = ""
+        for (let i = 0; i < Math.min(max_displayed, pod["captions"].length); i++) {
+            cn += "<a href=\"#\" id='" + "lin_" + i + "' onclick=\"toLinkify('" + pod["captions"][i] + "')\">\n" +
+                "                            <img src=\"logo2.png\" title=\"Linkify\"\n" +
+                "                                 style=\"width:30px;height:30px; padding-top: 0px\">\n" +
+                "                        </a>"
+
+
+            cn += pod["captions"][i]
+
+            cn += "<a href=\"#\" id='" + "speak_" + i + "' onclick=\"speak('" + pod["captions"][i] + "', '" + main_lang + "')\">\n" +
+                "                            <img src=\"audio.png\" title=\"Linkify\"\n" +
+                "                                 style=\"width:30px;height:30px; padding-top: 0px\">\n" +
+                "                        </a>"
+
+            if (i != max_displayed - 1) {
+                cn += "<br><hr>"
+            }
+        }
+
+
+        correct_answer = cn
+        question = "<img src=\"" + "img//" + pod["url"] + "\" height=\"450\" alt=\"Question image\">"
         document.getElementById("question").innerHTML = question;
 
         //document.getElementById("next").innerText = "Again"
@@ -279,12 +377,15 @@
     function pressSecond() {
         if (isRecording) {
             speech.stop();
+
+            /*
             document.getElementById("next").style.display = "visible";
             if (answerRevealed) {
                 document.getElementById("ans").hidden = false
             }
             document.getElementById("next").disabled = false;
             document.getElementById("stop").innerText = "Again"
+             */
         } else {
             if (!isReading) {
                 document.getElementById("ans").hidden = true
@@ -321,14 +422,16 @@
         readTextFile(function (dt) {
             parts = dt.split("\n")
             for (let i = 0; i < parts.length; i++) {
-                mems = parts[i].split('|')
-                obj = {}
-                obj["url"] = mems[0]
-                obj["captions"] = []
-                for (let j = 1; j < mems.length - 3; j++) {
-                    obj.captions.push(mems[j])
+                if (parts[i].indexOf("|") != 0) {
+                    mems = parts[i].split('|')
+                    obj = {}
+                    obj["url"] = mems[0]
+                    obj["captions"] = []
+                    for (let j = 1; j < mems.length - 3; j++) {
+                        obj.captions.push(mems[j])
+                    }
+                    data.push(obj)
                 }
-                data.push(obj)
             }
 
             after()
@@ -339,6 +442,10 @@
     initData(function () {
         inittts(main_lang)
         speech = new p5.SpeechRec(main_lang, gotSpeech)
+        console.log("speech = ", speech)
+        if (!('webkitSpeechRecognition' in window)){
+            alert("Speech recording is not supported in this browser. Try the last version of Google Chrome");
+        }
         speech.onEnd = stopRecording
         start_the_whole_thing()
         isReading = false
@@ -346,6 +453,8 @@
         ety = document.getElementById("ety_part")
         prono = document.getElementById("prono_part")
     })
+
+    apply_autocomplete(main_lang)
 
 </script>
 
